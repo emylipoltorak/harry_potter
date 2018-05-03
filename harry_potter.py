@@ -38,13 +38,13 @@ def best_price(cart, discounts):
     '''
     This should print out the final grouped cart and return our guess at the best price.
     '''
-    max_size = best_set_size(discounts)
+    best_size = best_set_size(discounts)
     grouped_cart = []
-    while cart:
+    while True:
         temp_cart = cart[:]
         new_group = []
         for book in cart:
-            while len(new_group) < max_size:
+            while len(new_group) < best_size:
                 if book not in new_group:
                     new_group.append(book)
                     temp_cart.remove(book)
@@ -53,6 +53,24 @@ def best_price(cart, discounts):
         grouped_cart.append(new_group)
         cart = temp_cart[:]
         new_group = []
+        if len(cart) >= best_size:
+            continue
+        else:
+            break
+    print('After first optimization, grouped_cart is {}, remaining in cart is {}'.format(grouped_cart, cart))
+    while cart:
+        grouped_cart.sort(key=len)
+        temp_cart = cart[:]
+        print('cart: {}'.format(cart))
+        print('temp cart: {}'.format(temp_cart))
+        for book in cart:
+            print('book: {}'.format(book))
+            for group in grouped_cart:
+                if book not in group and book in temp_cart:
+                    group.append(book)
+                    temp_cart.remove(book)
+                    print('removed {}'.format(book))
+        cart = temp_cart[:]
     print('cart: {}'.format(grouped_cart))
     return calculate_price(grouped_cart,discount_structure)
 
@@ -61,6 +79,7 @@ def best_price(cart, discounts):
 if __name__ == '__main__':
     '''
     The test case outlined in the problem description.
+    Misc other test cases.
     '''
     one = Book(1)
     two = Book(2)
@@ -69,3 +88,5 @@ if __name__ == '__main__':
     five = Book(5)
 
     print(best_price([one,one,two,two,three,three,four,five], discount_structure))
+    print(best_price([one,one,two,two,three,three,four,four,five], discount_structure))
+    print(best_price([one, one, one, two, two, three, three, three, four, four, five, five, five], discount_structure))
